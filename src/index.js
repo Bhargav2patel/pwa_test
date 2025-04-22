@@ -1,20 +1,36 @@
 if ("serviceWorker" in navigator) {
-  //   window.addEventListener("load", () => {
-  navigator.serviceWorker.register("firebase-messaging-sw.js")
+  navigator.serviceWorker
+    .register("firebase-messaging-sw.js")
     .then((registration) => {
       console.log("Service Worker registered with scope:", registration.scope);
       console.log("code updated");
+
+      // Link your service worker to Firebase Messaging
+      messaging.useServiceWorker(registration);
+
+      // Request Notification permission
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          messaging.getToken({
+            vapidKey: "BL_ER_hSz-ZrQFK47ZDhSnOd6oKhNvKo8-bKImrd56ZonZHXbd-LtfDk9UN964FgN5Vg0VyliBxZt5V9V6yTiAI"
+          }).then((token) => {
+            console.log("FCM Token:", token);
+            // send this token to your backend (or store)
+          }).catch((err) => {
+            console.error("Error getting FCM token", err);
+          });
+        } else {
+          console.log("Permission not granted for notifications");
+        }
+      });
 
     })
     .catch((error) => {
       console.error("Service Worker registration failed:", error);
     });
-  //   });
-
 } else {
   console.log("Service Worker not supported in this browser.");
 }
-
 
 // Your Firebase config (get it from Firebase Console > Project Settings)
 const firebaseConfig = {
@@ -32,17 +48,3 @@ firebase.initializeApp(firebaseConfig);
 
 // Initialize Messaging
 const messaging = firebase.messaging();
-
-// Ask permission and get token
-Notification.requestPermission().then((permission) => {
-  if (permission === 'granted') {
-    messaging.getToken({
-      vapidKey: "BL_ER_hSz-ZrQFK47ZDhSnOd6oKhNvKo8-bKImrd56ZonZHXbd-LtfDk9UN964FgN5Vg0VyliBxZt5V9V6yTiAI"
-    }).then((token) => {
-      console.log("FCM Token:", token);
-      // send this token to your backend (or store)
-    });
-  } else {
-    console.log("Permission not granted for notifications");
-  }
-});
