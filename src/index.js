@@ -15,9 +15,7 @@ if ("serviceWorker" in navigator) {
 }
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging.js";
-
+// Your Firebase config (get it from Firebase Console > Project Settings)
 const firebaseConfig = {
   apiKey: "AIzaSyCSrX7qrYy6PjuiKRpYQI9LrClG_9O2oZI",
   authDomain: "pwa-test-50815.firebaseapp.com",
@@ -28,38 +26,19 @@ const firebaseConfig = {
   measurementId: "G-W9JWLVND44"
 };
 
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-// 🔐 Request Permission
-async function requestPermission() {
-  try {
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      console.log('Notification permission granted.');
+// Initialize Messaging
+const messaging = firebase.messaging();
 
-      const token = await getToken(messaging, {
-        vapidKey: "BL_ER_hSz-ZrQFK47ZDhSnOd6oKhNvKo8-bKImrd56ZonZHXbd-LtfDk9UN964FgN5Vg0VyliBxZt5V9V6yTiAI"
-      });
-
-      if (token) {
-        console.log("FCM Token:", token);
-        // Save/send this token to your server
-      } else {
-        console.warn("No registration token available.");
-      }
-
-    } else {
-      console.warn('Notification permission not granted.');
-    }
-  } catch (err) {
-    console.error('An error occurred while retrieving token:', err);
-  }
-}
-
-requestPermission();
-
-// Listen for foreground messages
-onMessage(messaging, (payload) => {
-  console.log('Message received. ', payload);
-});
+// Ask permission and get token
+messaging.requestPermission()
+  .then(() => messaging.getToken({ vapidKey: "BL_ER_hSz-ZrQFK47ZDhSnOd6oKhNvKo8-bKImrd56ZonZHXbd-LtfDk9UN964FgN5Vg0VyliBxZt5V9V6yTiAI" }))
+  .then((token) => {
+    console.log("FCM Token:", token);
+    // You can send this token to your backend to send notifications
+  })
+  .catch((err) => {
+    console.error("Permission denied or error in getting token", err);
+  });
