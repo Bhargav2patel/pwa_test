@@ -1,8 +1,7 @@
-// Import Firebase scripts
+// === Firebase Messaging ===
 importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js');
 
-// Initialize Firebase (same config as in index.js)
 firebase.initializeApp({
     apiKey: "AIzaSyCSrX7qrYy6PjuiKRpYQI9LrClG_9O2oZI",
     authDomain: "pwa-test-50815.firebaseapp.com",
@@ -13,13 +12,10 @@ firebase.initializeApp({
     measurementId: "G-W9JWLVND44"
 });
 
-// Retrieve messaging instance
 const messaging = firebase.messaging();
 
-// Background message handler
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
@@ -27,4 +23,27 @@ messaging.onBackgroundMessage((payload) => {
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// === Caching Logic ===
+const CACHE_NAME = 'my-app-cache-v1';
+const urlsToCache = [
+    'index.html',
+    'src/master.css',
+    'src/index.js',
+    'images/vak_icon_192px.png',
+];
+
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
+    );
+});
+
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
+    );
 });

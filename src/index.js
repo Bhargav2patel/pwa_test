@@ -1,11 +1,10 @@
 if ("serviceWorker" in navigator) {
   //   window.addEventListener("load", () => {
-  navigator.serviceWorker
-    .register("sw.js")
+  navigator.serviceWorker.register("firebase-messaging-sw.js")
     .then((registration) => {
       console.log("Service Worker registered with scope:", registration.scope);
       console.log("code updated");
-      
+
     })
     .catch((error) => {
       console.error("Service Worker registration failed:", error);
@@ -35,12 +34,15 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Ask permission and get token
-messaging.requestPermission()
-  .then(() => messaging.getToken({ vapidKey: "BL_ER_hSz-ZrQFK47ZDhSnOd6oKhNvKo8-bKImrd56ZonZHXbd-LtfDk9UN964FgN5Vg0VyliBxZt5V9V6yTiAI" }))
-  .then((token) => {
-    console.log("FCM Token:", token);
-    // You can send this token to your backend to send notifications
-  })
-  .catch((err) => {
-    console.error("Permission denied or error in getting token", err);
-  });
+Notification.requestPermission().then((permission) => {
+  if (permission === 'granted') {
+    messaging.getToken({
+      vapidKey: "BL_ER_hSz-ZrQFK47ZDhSnOd6oKhNvKo8-bKImrd56ZonZHXbd-LtfDk9UN964FgN5Vg0VyliBxZt5V9V6yTiAI"
+    }).then((token) => {
+      console.log("FCM Token:", token);
+      // send this token to your backend (or store)
+    });
+  } else {
+    console.log("Permission not granted for notifications");
+  }
+});
