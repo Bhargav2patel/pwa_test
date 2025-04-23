@@ -13,12 +13,38 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// Handle background push messages
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Background message received:', payload);
+
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: payload.notification.icon,
+        icon: payload.notification.icon || '/images/vak_icon_192px.png'
     };
+
     self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Cache during install
+const CACHE_NAME = 'my-app-cache-v1';
+const urlsToCache = [
+    'index.html',
+    'src/master.css',
+    'src/index.js',
+    'images/vak_icon_192px.png',
+];
+
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
+    );
+});
+
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
+    );
 });
