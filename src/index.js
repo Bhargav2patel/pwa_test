@@ -57,7 +57,7 @@ onMessage(messaging, (payload) => {
   if (Notification.permission === 'granted') {
     new Notification(title, {
       body,
-      icon: '/images/vak_icon_192px.png'
+      icon: '/pwa_test/images/vak_icon_192px.png'
     });
   }
 });
