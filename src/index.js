@@ -55,10 +55,12 @@ onMessage(messaging, (payload) => {
   alert("Foreground message received: " + JSON.stringify(payload.notification));
   // Show native-style notification
   if (Notification.permission === 'granted') {
-    new Notification(title, {
-      body,
-      icon: '/pwa_test/images/vak_icon_192px.png'
-    });
+    setTimeout(() => {
+      new Notification(title, {
+        body,
+        icon: '/pwa_test/images/vak_icon_192px.png' || '/images/vak_icon_192px.png'
+      });
+    }, 100);
   }
 });
 
