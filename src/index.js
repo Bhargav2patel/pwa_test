@@ -1,7 +1,6 @@
 // index.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging.js";
-import { onMessage } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -50,8 +49,6 @@ if ('serviceWorker' in navigator) {
 // Listen for foreground messages
 onMessage(messaging, (payload) => {
   console.log('Message received in foreground:', payload);
-
-  // Optional: show a custom in-app notification
   const { title, body } = payload.notification;
   alert(`🔔 ${title}\n${body}`);
 });
