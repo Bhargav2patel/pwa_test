@@ -50,17 +50,21 @@ if ('serviceWorker' in navigator) {
 // Listen for foreground messages
 onMessage(messaging, (payload) => {
   console.log('Foreground message received:', payload);
-
   const { title, body } = payload.notification;
+
   alert("Foreground message received: " + JSON.stringify(payload.notification));
-  // Show native-style notification
+
+  // Show native notification via service worker
   if (Notification.permission === 'granted') {
-    setTimeout(() => {
-      new Notification(title, {
-        body,
-        icon: '/pwa_test/images/vak_icon_192px.png' || '/images/vak_icon_192px.png'
-      });
-    }, 100);
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg) {
+        reg.showNotification(title, {
+          body,
+          icon: '/pwa_test/images/vak_icon_192px.png'
+        });
+      }
+    });
   }
 });
+
 
