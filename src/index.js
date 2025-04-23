@@ -33,6 +33,7 @@ if ('serviceWorker' in navigator) {
           }).then((token) => {
             console.log('FCM Token:', token);
             alert("FCM Token Generated");
+            document.getElementById("fcmtoken").innerText = token;
             // Store or send this token to your backend
           }).catch((err) => {
             console.error('Error getting token:', err);
