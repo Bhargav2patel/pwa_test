@@ -52,7 +52,7 @@ onMessage(messaging, (payload) => {
   console.log('Foreground message received:', payload);
 
   const { title, body } = payload.notification;
-
+  alert("Foreground message received: " + JSON.stringify(payload.notification));
   // Show native-style notification
   if (Notification.permission === 'granted') {
     new Notification(title, {
