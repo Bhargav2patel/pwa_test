@@ -49,7 +49,16 @@ if ('serviceWorker' in navigator) {
 
 // Listen for foreground messages
 onMessage(messaging, (payload) => {
-  console.log('Message received in foreground:', payload);
+  console.log('Foreground message received:', payload);
+
   const { title, body } = payload.notification;
-  alert(`🔔 ${title}\n${body}`);
+
+  // Show native-style notification
+  if (Notification.permission === 'granted') {
+    new Notification(title, {
+      body,
+      icon: '/images/vak_icon_192px.png'
+    });
+  }
 });
+
